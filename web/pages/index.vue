@@ -21,9 +21,27 @@
       <figcaption>{{ info.image.caption }}</figcaption>
     </figure>
 
-    <div class="sessionListContainer">
-      <h2 class="sessionListTitle">Schedule</h2>
-      <SessionList :program="program" :info="info" />
+    <Carousel :perPage="1">
+      <Slide>
+        Slide 1 Content
+      </Slide>
+      <Slide>
+        Slide 2 Content
+      </Slide>
+      <Slide>
+        Slide 3 Content
+      </Slide>
+      <Slide>
+        Slide 5 Content
+      </Slide>
+      <Slide>
+        Slide 5 Content
+      </Slide>
+    </Carousel>
+
+    <div class="newsListContainer">
+      <h2 class="newsListTitle">News</h2>
+      <NewsList :news="news" />
     </div>
   </section>
 </template>
@@ -31,29 +49,35 @@
 <script>
 import { dateFilter } from 'vue-date-fns'
 
+import { Carousel, Slide } from 'vue-carousel'
+
 import sanityClient from '../sanityClient'
 import SanityImage from '~/components/SanityImage'
-import SessionList from '~/components/SessionList'
+
+import NewsList from '~/components/NewsList'
 
 const query = `
   {
     "info": *[_id == "eventInformation"] {
       ..., image { ..., asset->}
-    }[0]
+    }[0],
+    "news": *[_type == "news"]
   }
 `
 
 export default {
   components: {
     SanityImage,
-    SessionList
+    NewsList,
+    Carousel,
+    Slide
   },
   filters: {
     dateFilter
   },
   data() {
     return {
-      program: this.$store.getters.getProgram
+      news: this.$store.getters.getNews
     }
   },
   async asyncData() {
@@ -85,6 +109,23 @@ export default {
 <style scoped>
 @import '../styles/custom-media.css';
 @import '../styles/custom-properties.css';
+
+.VueCarousel-slide {
+  position: relative;
+  background: #42b983;
+  color: #fff;
+  font-family: Arial;
+  font-size: 24px;
+  text-align: center;
+  min-height: 100px;
+}
+
+.label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 .container {
   padding: 1.5rem 0;
@@ -123,7 +164,7 @@ figcaption {
   vertical-align: top;
 }
 
-.sessionListTitle {
+.newsListTitle {
   text-align: center;
   font-weight: 600;
   font-size: var(--font-title2-size);
@@ -136,8 +177,8 @@ figcaption {
   }
 }
 
-.sessionListContainer {
-  max-width: var(--width-small);
+.newsListContainer {
+  max-width: var(--width-medium);
   margin: 0 auto;
   padding: 0 1.5rem;
   box-sizing: border-box;
